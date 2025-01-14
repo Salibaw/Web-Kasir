@@ -76,7 +76,6 @@ class ProductController extends Controller
     
         $imagePath = $product->image;
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
             if ($product->image && file_exists(public_path($product->image))) {
                 unlink(public_path($product->image));
             }
@@ -129,12 +128,10 @@ class ProductController extends Controller
 
     public function downloadPDF()
     {
-        $transactions = Transaction::with('product')->get(); // Fetch all transactions
+        $transactions = Transaction::with('product')->get(); 
 
-        // Pass the data to the PDF view
         $pdf = Pdf::loadView('admin.transactions.pdf', compact('transactions'));
 
-        // Download the generated PDF
         return $pdf->download('transactions_report.pdf');
     }
 }

@@ -17,7 +17,7 @@
 
             <div class="card col-md-4" style="border: 1px solid;">
                 <!-- Tampilkan Gambar Profil -->
-                <img src="{{ asset('storage/' . Auth::user()->gambar) }}" alt="Profile Image" class="img-thumbnail mb-3 mt-2" style="width: 150px; height: 150px; object-fit: cover;">
+                <img src="{{ asset('images/' . Auth::user()->gambar) }}" alt="Profile Image" class="img-thumbnail mb-3 mt-2" style="width: 150px; height: 150px; object-fit: cover;">
                 <form action="{{ route('profile.update', Auth::user()->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')

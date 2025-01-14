@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Perpustakaan LP3I')</title>
+    <title>@yield('title', 'BASMALAH')</title>
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -237,19 +237,14 @@
             <a href="{{ route('kasir.dashboard') }}" class="{{ request()->routeIs('kasir.dashboard') ? 'active' : '' }}">
                 <img src="{{ asset('images/dashboard (2).png') }}" alt="">Dashboard
             </a>
-            <a href="{{ route('kasir.transactions.index') }}" class="{{ request()->routeIs('kasir.transactions.index') ? 'active' : '' }}">
-                <img src="{{ asset('images/file.png') }}" alt="">Riwayat Transaksi
-            </a>
+           
             <a href="{{ route('kasir.transactions.create') }}" class="{{ request()->routeIs('kasir.transactions.create') ? 'active' : '' }}">
                 <img src="{{  asset('images/transaction.png') }}" alt="">Transaksi
             </a>
             <a href="{{ route('kasir.reports.stocks') }}" class="{{ request()->routeIs('kasir.reports.stocks') ? 'active' : '' }}">
                 <img src="{{  asset('images/scroll.png') }}" alt="">Laporan Stock
             </a>
-            <a href="{{ route('kasir.products') }}" class="{{ request()->routeIs('kasir.products') ? 'active' : '' }}">
-                <img src="{{ asset('images/commerce.png') }}" alt="">Manajemen Product
-            </a>
-           
+     
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" id="logout" class="btn-logout mt-4 ms-3" ><img src="{{ asset('images/logout (2).png') }}" style="width: 22px; height: 22px; margin-right: 13px; " alt="">Logout</button>

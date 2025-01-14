@@ -82,21 +82,24 @@ Route::get('/profile', function () {
 // Route untuk petugas kasir
 Route::middleware(['auth', 'role:petugas_kasir'])->group(function () {
     Route::get('/kasir/dashboard', [KasirController::class, 'dashboard'])->name('kasir.dashboard');
-    Route::get('/kasir/transactions', [KasirController::class, 'index'])->name('kasir.transactions.index');
+
     Route::get('/kasir/transactions/create', [KasirController::class, 'create'])->name('kasir.transactions.create');
-    Route::get('/kasir/reports/stocks', [KasirController::class, 'stockReport'])->name('kasir.reports.stocks');
     Route::post('/kasir/transactions', [KasirController::class, 'store'])->name('kasir.transactions.store');
     Route::delete('/kasir/transactions/{id}', [KasirController::class, 'destroy'])->name('kasir.transactions.destroy');
-    Route::get('/kasir/products', [KasirController::class, 'indexkasir'])->name('kasir.products');
+    Route::get('/kasir/transactions/{id}', [KasirController::class, 'show'])->name('kasir.transactions.show');
+    Route::get('/kasir/transactions/pdf', [KasirController::class, 'downloadPDF'])->name('kasir.transactions.pdf');
+    Route::get('/kasir/transactions/search', [KasirController::class, 'search'])->name('kasir.transactions.search');
+
     Route::get('/kasir/products/create', [KasirController::class, 'createkasir'])->name('kasir.products.create');
     Route::post('/kasir/products', [KasirController::class, 'storekasir'])->name('kasir.products.store');
     Route::get('/kasir/products/{id}/edit', [KasirController::class, 'editkasir'])->name('kasir.products.edit');
     Route::put('/kasir/products/{id}', [KasirController::class, 'updatekasir'])->name('kasir.products.update');
     Route::delete('/kasir/products/{id}', [KasirController::class, 'destroykasir'])->name('kasir.products.destroy');
-    Route::get('/kasir/transactions/pdf', [KasirController::class, 'downloadPDF'])->name('kasir.transactions.pdf');
-    Route::get('/kasir/transactions/search', [KasirController::class, 'search'])->name('kasir.transactions.search');
     Route::get('/kasir/product/search', [KasirController::class, 'searchpdct'])->name('kasir.product.search');
+
+    Route::get('/kasir/reports/stocks', [KasirController::class, 'stockReport'])->name('kasir.reports.stocks');
     Route::get('/kasir/stock/search', [KasirController::class, 'stocksearch'])->name('kasir.stock.search');
+
     Route::get('/kasir/profile', [KasirController::class, 'showProfilee'])->name('profile.show');
     Route::put('/kasir/profile', [KasirController::class, 'updateProfilee'])->name('profile.update');
 });

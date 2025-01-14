@@ -77,9 +77,8 @@
             <table class="table table-bordered table-hover stock-table p-2">
                 <thead class="table-light">
                     <tr class="text-center">
-                        <th>ID</th>
+                        <th>No</th>
                         <th>Product</th>
-                        <th>Image</th>
                         <th>Stock</th>
                         <th>Price</th>
                     </tr>
@@ -89,15 +88,8 @@
                         <tr>
                             <td class="text-center">{{ $stock->id }}</td>
                             <td>{{ $stock->name }}</td>
-                            <td class="text-center">
-                                @if ($stock->image)
-                                    <img src="{{ asset('storage/' . $stock->image) }}" 
-                                         alt="{{ $stock->name }}" 
-                                         class="stock-image">
-                                @endif
-                            </td>
                             <td class="text-center">{{ $stock->stock }}</td>
-                            <td class="text-end">
+                            <td class="text-center">
                                 Rp{{ number_format($stock->price, 0, ',', '.') }}
                             </td>
                         </tr>

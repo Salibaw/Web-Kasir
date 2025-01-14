@@ -16,22 +16,17 @@ class AdminController extends Controller
 
     public function dashboard()
 {
-    // Ambil data transaksi terbaru
     $transactions = Transaction::latest()->get();
-    
-    // Menghitung total pengguna, produk, penjualan, dan pendapatan
-    $userCount = User::count(); // Jumlah total pengguna
-    $productCount = Product::count(); // Jumlah total produk
-    $salesCount = Sale::count(); // Jumlah total transaksi penjualan
-    $totalRevenue = Sale::sum('price'); // Total pendapatan dari penjualan
-    $totalSales = $transactions->sum('quantity'); // Total penjualan (quantity)
-    $totalRevenue = $transactions->sum('total');// Total pendapatan dari penjualan
-    // Data untuk grafik penjualan bulanan
+    $userCount = User::count(); 
+    $productCount = Product::count();
+    $salesCount = Sale::count(); 
+    $totalRevenue = Sale::sum('price'); 
+    $totalSales = $transactions->sum('quantity');
+    $totalRevenue = $transactions->sum('total');
     $monthlySales = Transaction::selectRaw('MONTH(created_at) as month, SUM(total) as total')
         ->groupBy('month')
         ->pluck('total', 'month');
 
-    // Data untuk produk terlaris
     $topProducts = Transaction::join('products', 'transactions.product_id', '=', 'products.id')
         ->selectRaw('products.name, SUM(transactions.quantity) as total_quantity')
         ->groupBy('products.name')
@@ -39,7 +34,6 @@ class AdminController extends Controller
         ->take(3)
         ->pluck('total_quantity', 'products.name');
 
-    // Kirim data ke view
     return view('admin.dashboard', compact('userCount', 'productCount', 'salesCount', 'totalRevenue', 'totalSales', 'monthlySales', 'topProducts'));
 }
 
@@ -47,7 +41,7 @@ class AdminController extends Controller
 
     public function manageUsers()
     {
-            $users = User::all(); // Ambil semua data pengguna
+            $users = User::all();
 
             $users = User::paginate(4); 
             return view('admin.users', compact('users'));
@@ -70,7 +64,6 @@ class AdminController extends Controller
 
     public function storeUser(Request $request)
     {
-        // Validasi data input
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -78,7 +71,6 @@ class AdminController extends Controller
            
         ]);
 
-        // Membuat pengguna baru
         User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -97,11 +89,10 @@ class AdminController extends Controller
 
     public function updateUser(Request $request, $id)
     {
-        // Validasi data input
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', Rule::unique('users')->ignore($id)],
-            'role' => ['required', Rule::in(['admin', 'pengguna', 'petugas_kasir', 'petugas_barang'])],
+            'role' => ['required', Rule::in(['admin','petugas_kasir'])],
         ]);
 
         $user = User::findOrFail($id);
@@ -131,22 +122,20 @@ class AdminController extends Controller
 
 
     public function salesReport(){
-        $sales = Sale::with('product')->get(); // Mengambil semua data penjualan beserta produk terkait
+        $sales = Sale::with('product')->get(); 
 
         return view('admin.reports.sales', compact('sales'));
     }
 
     public function stockReport()
 {
-    // Ambil data stok produk dari database
-     $stocks = Product::all();
+    $stocks = Product::all();
     $stocks = Product::paginate(3);
     return view('admin.reports.stock', compact('stocks'));
 }
 
 public function financialReport()
 {
-    // Ambil data laporan keuangan dari database
      $finances = FinancialReport::all();
     
     return view('admin.reports.financial', compact('finances'));
@@ -156,7 +145,6 @@ public function searchusers(Request $request)
 {
     $query = $request->input('query');
 
-    // Perform search query
     $users = User::where('name', 'LIKE', "%{$query}%")
         ->orWhere('email', 'LIKE', "%{$query}%")->paginate(4);
       

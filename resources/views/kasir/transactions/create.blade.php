@@ -2,14 +2,15 @@
 
 @section('content')
 <style>
-    body{
+    body {
         overflow-y: auto;
     }
+
     :root {
         --primary-color: #007bff;
         --secondary-color: #B0E0E6;
         --border-color: #dee2e6;
-        --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         --header-height: 60px;
         --spacing-unit: 1rem;
     }
@@ -51,7 +52,7 @@
 
     .product-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
 
     .product-card img {
@@ -148,7 +149,7 @@
         color: var(--primary-color);
         margin: 1rem 0;
         padding: 1rem;
-        background-color: rgba(0,123,255,0.1);
+        background-color: rgba(0, 123, 255, 0.1);
         border-radius: 8px;
         text-align: center;
     }
@@ -206,7 +207,7 @@
         .main-content {
             flex-direction: column;
         }
-        
+
         .payment-sidebar {
             position: relative;
             top: 0;
@@ -227,7 +228,7 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 0.5rem;
         }
-        
+
         .product-card img {
             height: 80px;
         }
@@ -249,15 +250,16 @@
 <div class="container-fluid">
     <h4>Transaksi</h4>
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     @endif
 
     <div class="search-container">
         <form class="d-flex" action="{{ route('kasir.transactions.search') }}" method="GET">
-            <input class="form-control me-2" type="search" placeholder="Cari produk..." name="search" value="{{ old('search', $search ?? '') }}">
+            <input class="form-control me-2" type="search" placeholder="Cari produk..." name="search"
+                value="{{ old('search', $search ?? '') }}">
             <button class="btn btn-primary px-4" type="submit">Cari</button>
         </form>
     </div>
@@ -267,29 +269,29 @@
         <div class="col-lg-8">
             <div class="product-grid">
                 @foreach ($products as $product)
-                <div class="product-card">
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
-                    <div class="product-info">
-                        <h6 class="text-center">{{ $product->name }}</h6>
-                        <p class="product-price text-center">Rp{{ number_format($product->price, 2) }}</p>
-                        
-                        <div class="quantity-controls">
-                            <label class="form-label small">Jumlah:</label>
-                            <input type="number" class="form-control form-control-sm" id="quantity_{{ $product->id }}" 
-                                   min="1" value="1" oninput="calculateTotal({{ $product->id }}, {{ $product->price }})">
-                        </div>
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h6 class="text-center">{{ $product->name }}</h6>
+                            <p class="product-price text-center">Rp{{ number_format($product->price, 2) }}</p>
 
-                        <div class="mb-2">
-                            <label class="form-label small">Total:</label>
-                            <input type="text" class="form-control form-control-sm" id="total_{{ $product->id }}" 
-                                   value="Rp{{ number_format($product->price, 2) }}" readonly>
-                        </div>
+                            <div class="quantity-controls">
+                                <label class="form-label small">Jumlah:</label>
+                                <input type="number" class="form-control form-control-sm" id="quantity_{{ $product->id }}"
+                                    min="1" value="1" oninput="calculateTotal({{ $product->id }}, {{ $product->price }})">
+                            </div>
 
-                        <button class="btn-add-product mt-auto" onclick="addProductToTable({{ $product->id }}, '{{ $product->name }}', {{ $product->price }})">
-                            Tambah
-                        </button>
+                            <div class="mb-2">
+                                <label class="form-label small">Total:</label>
+                                <input type="text" class="form-control form-control-sm" id="total_{{ $product->id }}"
+                                    value="Rp{{ number_format($product->price, 2) }}" readonly>
+                            </div>
+
+                            <button class="btn-add-product mt-auto"
+                                onclick="addProductToTable({{ $product->id }}, '{{ $product->name }}', {{ $product->price }})">
+                                Tambah
+                            </button>
+                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
 
@@ -338,9 +340,8 @@
                     @csrf
                     <div class="form-group">
                         <label>Uang Tunai Diterima</label>
-                        <input type="number" name="cash_received" id="cash_received" 
-                               class="form-control" min="0" step="0.01" 
-                               oninput="calculateChange()" required>
+                        <input type="number" name="cash_received" id="cash_received" class="form-control" min="0"
+                            step="0.01" oninput="calculateChange()" required>
                     </div>
 
                     <div class="form-group">
@@ -350,8 +351,8 @@
 
                     <div class="payment-total">
                         <label>Total Pembayaran</label>
-                        <input type="text" id="total_payment" name="total_payment" 
-                               class="form-control text-center" readonly>
+                        <input type="text" id="total_payment" name="total_payment" class="form-control text-center"
+                            readonly>
                     </div>
 
                     <input type="hidden" id="products_data" name="products_data">
@@ -363,45 +364,45 @@
 </div>
 
 <script>
-let selectedProducts = [];
+    let selectedProducts = [];
 
-function calculateTotal(productId, price) {
-    const quantity = parseInt(document.getElementById('quantity_' + productId).value) || 0;
-    const total = price * quantity;
-    document.getElementById('total_' + productId).value = 'Rp' + total.toFixed(2);
-}
-
-function addProductToTable(productId, productName, price) {
-    const quantity = parseInt(document.getElementById('quantity_' + productId).value);
-    const totalPrice = price * quantity;
-
-    if (quantity > 0) {
-        const existingProductIndex = selectedProducts.findIndex(p => p.id === productId);
-        if (existingProductIndex > -1) {
-            selectedProducts[existingProductIndex].quantity = quantity;
-            selectedProducts[existingProductIndex].total_price = totalPrice;
-        } else {
-            selectedProducts.push({
-                id: productId,
-                name: productName,
-                quantity: quantity,
-                total_price: totalPrice,
-                price: price
-            });
-        }
-
-        updateTable();
-        updateTotalPayment();
+    function calculateTotal(productId, price) {
+        const quantity = parseInt(document.getElementById('quantity_' + productId).value) || 0;
+        const total = price * quantity;
+        document.getElementById('total_' + productId).value = 'Rp' + total.toFixed(2);
     }
-}
 
-function updateTable() {
-    const tableBody = document.querySelector('#selected-products-table tbody');
-    tableBody.innerHTML = '';
+    function addProductToTable(productId, productName, price) {
+        const quantity = parseInt(document.getElementById('quantity_' + productId).value);
+        const totalPrice = price * quantity;
 
-    selectedProducts.forEach((product, idx) => {
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
+        if (quantity > 0) {
+            const existingProductIndex = selectedProducts.findIndex(p => p.id === productId);
+            if (existingProductIndex > -1) {
+                selectedProducts[existingProductIndex].quantity = quantity;
+                selectedProducts[existingProductIndex].total_price = totalPrice;
+            } else {
+                selectedProducts.push({
+                    id: productId,
+                    name: productName,
+                    quantity: quantity,
+                    total_price: totalPrice,
+                    price: price
+                });
+            }
+
+            updateTable();
+            updateTotalPayment();
+        }
+    }
+
+    function updateTable() {
+        const tableBody = document.querySelector('#selected-products-table tbody');
+        tableBody.innerHTML = '';
+
+        selectedProducts.forEach((product, idx) => {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
             <td>${product.name}</td>
             <td class="text-center">
                 <input type="number" class="form-control form-control-sm mx-auto" 
@@ -419,95 +420,95 @@ function updateTable() {
 </button>
 </td>
 `;
-tableBody.appendChild(newRow);
-});
-}
+            tableBody.appendChild(newRow);
+        });
+    }
 
-function updateQuantity(index, newQuantity) {
-const product = selectedProducts[index];
-product.quantity = parseInt(newQuantity);
-product.total_price = product.quantity * product.price;
-updateTable();
-updateTotalPayment();
-}
+    function updateQuantity(index, newQuantity) {
+        const product = selectedProducts[index];
+        product.quantity = parseInt(newQuantity);
+        product.total_price = product.quantity * product.price;
+        updateTable();
+        updateTotalPayment();
+    }
 
-function removeProduct(index) {
-selectedProducts.splice(index, 1);
-updateTable();
-updateTotalPayment();
-}
+    function removeProduct(index) {
+        selectedProducts.splice(index, 1);
+        updateTable();
+        updateTotalPayment();
+    }
 
-function updateTotalPayment() {
-const totalPayment = selectedProducts.reduce((sum, product) => sum + product.total_price, 0);
-document.getElementById('total_payment').value = totalPayment.toFixed(2);
-calculateChange();
-}
+    function updateTotalPayment() {
+        const totalPayment = selectedProducts.reduce((sum, product) => sum + product.total_price, 0);
+        document.getElementById('total_payment').value = totalPayment.toFixed(2);
+        calculateChange();
+    }
 
-function calculateChange() {
-const totalPayment = parseFloat(document.getElementById('total_payment').value) || 0;
-const cashReceived = parseFloat(document.getElementById('cash_received').value) || 0;
-const change = cashReceived - totalPayment;
-document.getElementById('change').value = change.toFixed(2);
-}
+    function calculateChange() {
+        const totalPayment = parseFloat(document.getElementById('total_payment').value) || 0;
+        const cashReceived = parseFloat(document.getElementById('cash_received').value) || 0;
+        const change = cashReceived - totalPayment;
+        document.getElementById('change').value = change.toFixed(2);
+    }
 
-// Handle form submission
-document.querySelector('form[action="{{ route('kasir.transactions.store') }}"]').addEventListener('submit', function(e) {
-if (selectedProducts.length === 0) {
-e.preventDefault();
-alert('Silakan pilih produk terlebih dahulu!');
-return false;
-}
+    // Handle form submission
+    document.querySelector('form[action="{{ route('kasir.transactions.store') }}"]').addEventListener('submit', function (e) {
+        if (selectedProducts.length === 0) {
+            e.preventDefault();
+            alert('Silakan pilih produk terlebih dahulu!');
+            return false;
+        }
 
-const cashReceived = parseFloat(document.getElementById('cash_received').value) || 0;
-const totalPayment = parseFloat(document.getElementById('total_payment').value) || 0;
+        const cashReceived = parseFloat(document.getElementById('cash_received').value) || 0;
+        const totalPayment = parseFloat(document.getElementById('total_payment').value) || 0;
 
-if (cashReceived < totalPayment) {
-e.preventDefault();
-alert('Jumlah uang yang diterima kurang dari total pembayaran!');
-return false;
-}
+        if (cashReceived < totalPayment) {
+            e.preventDefault();
+            alert('Jumlah uang yang diterima kurang dari total pembayaran!');
+            return false;
+        }
 
-document.getElementById('products_data').value = JSON.stringify(selectedProducts);
-});
+        document.getElementById('products_data').value = JSON.stringify(selectedProducts);
+    });
 
-// Optional: Add a clear all function
-function clearCart() {
-selectedProducts = [];
-updateTable();
-updateTotalPayment();
-document.getElementById('cash_received').value = '';
-document.getElementById('change').value = '';
-}
+    // Optional: Add a clear all function
+    function clearCart() {
+        selectedProducts = [];
+        updateTable();
+        updateTotalPayment();
+        document.getElementById('cash_received').value = '';
+        document.getElementById('change').value = '';
+    }
 
-// Optional: Format currency
-function formatCurrency(amount) {
-return new Intl.NumberFormat('id-ID', {
-style: 'currency',
-currency: 'IDR',
-minimumFractionDigits: 0,
-maximumFractionDigits: 0
-}).format(amount);
-}
+    // Optional: Format currency
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
+    }
 
-// Optionally add keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-// Press F2 to focus on search
-if (e.key === 'F2') {
-e.preventDefault();
-document.querySelector('input[type="search"]').focus();
-}
+    // Optionally add keyboard shortcuts
+    document.addEventListener('keydown', function (e) {
+        // Press F2 to focus on search
+        if (e.key === 'F2') {
+            e.preventDefault();
+            document.querySelector('input[type="search"]').focus();
+        }
 
-// Press F8 to focus on cash received
-if (e.key === 'F8') {
-e.preventDefault();
-document.getElementById('cash_received').focus();
-}
+        // Press F8 to focus on cash received
+        if (e.key === 'F8') {
+            e.preventDefault();
+            document.getElementById('cash_received').focus();
+        }
 
-// Press F12 to process payment
-if (e.key === 'F12') {
-e.preventDefault();
-document.querySelector('button[type="submit"]').click();
-}
-});
+        // Press F12 to process payment
+        if (e.key === 'F12') {
+            e.preventDefault();
+            document.querySelector('button[type="submit"]').click();
+        }
+    });
 </script>
 @endsection

@@ -129,7 +129,7 @@
                                           class="d-flex gap-2">
                                         @csrf
                                         <select name="role" class="form-select role-select">
-                                            @foreach(['admin', 'pengguna', 'petugas_kasir', 'petugas_barang'] as $role)
+                                            @foreach(['admin','petugas_kasir'] as $role)
                                                 <option value="{{ $role }}" {{ $user->role === $role ? 'selected' : '' }}>
                                                     {{ ucwords(str_replace('_', ' ', $role)) }}
                                                 </option>
@@ -226,9 +226,7 @@
                         <select name="role" id="role" class="form-select" required>
                             <option value="">Select Role</option>
                             <option value="admin">Admin</option>
-                            <option value="pengguna">Pengguna</option>
                             <option value="petugas_kasir">Petugas Kasir</option>
-                            <option value="petugas_barang">Petugas Barang</option>
                         </select>
                     </div>
                     <div class="text-end">
