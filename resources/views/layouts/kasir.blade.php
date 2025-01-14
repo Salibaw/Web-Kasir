@@ -132,7 +132,7 @@
         }
 
      #logout{
-          background-color: #00328E;
+          background-color:rgb(0, 0, 0);
           background-color: white; 
           border: 1px solid #00328E;
            color: #00328E; 
