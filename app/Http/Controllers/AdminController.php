@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 use App\Models\FinancialReport;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
-
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ProductImport;  
 class AdminController extends Controller
 {
 
@@ -153,4 +154,3 @@ public function searchusers(Request $request)
 }
 
 }
-

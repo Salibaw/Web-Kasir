@@ -39,6 +39,14 @@ class KasirController extends Controller
 
         return view('kasir.dashboard', compact('productCount', 'salesCount', 'totalRevenue', 'totalSales', 'monthlySales', 'topProducts'));
     }
+    public function index()
+    {
+        $transactions = Transaction::with('product')->get();
+        // dd($transactions);
+        
+        // $transactions = Transaction::paginate(3);
+        return view('kasir.transactions.show', compact('transactions'));
+    }
 
     public function create()
     {
@@ -48,43 +56,48 @@ class KasirController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $productsData = json_decode($request->products_data, true);
-        $totalPayment = 0;
+{
+    $productsData = json_decode($request->products_data, true);
 
-        foreach ($productsData as $productData) {
-            $product = Product::findOrFail($productData['id']);
+    if (!is_array($productsData)) {
+        return redirect()->back()->with('error', 'Data produk tidak valid.');
+    }
 
-            // Pastikan stok cukup
-            if ($product->stock < $productData['quantity']) {
-                return redirect()->back()->with('error', 'Stok tidak mencukupi untuk produk ' . $product->name);
-            }
+    $totalPayment = 0;
+    $lastTransactionId = null;
 
-            // Kurangi stok produk
-            $product->stock -= $productData['quantity'];
-            $product->save();
+    foreach ($productsData as $productData) {
+        $product = Product::findOrFail($productData['id']);
 
-            // Simpan transaksi
-            $transaction = new Transaction();
-            $transaction->product_id = $product->id;
-            $transaction->quantity = $productData['quantity'];
-            $transaction->price = $product->price;
-            $transaction->total = $product->price * $productData['quantity'];
-            $transaction->cash_received = $request->cash_received;
-            $transaction->change = $this->calculateChange($totalPayment, $request->cash_received);
-            $transaction->save();
-
-            $totalPayment += $transaction->total;
+        if ($product->stock < $productData['quantity']) {
+            return redirect()->back()->with('error', 'Stok tidak mencukupi untuk produk ' . $product->name);
         }
 
-        return redirect()->route('kasir.transactions.index')->with('success', 'Transaksi berhasil.');
+        $product->stock -= $productData['quantity'];
+        $product->save();
+
+        $transaction = new Transaction();
+        $transaction->product_id = $product->id;
+        $transaction->quantity = $productData['quantity'];
+        $transaction->price = $product->price;
+        $transaction->total = $product->price * $productData['quantity'];
+        $transaction->cash_received = $request->cash_received;
+        $transaction->change = $transaction->cash_received - $transaction->total;
+        $transaction->save();
+
+        $totalPayment += $transaction->total;
+        $lastTransactionId = $transaction->id;
     }
+
+    return redirect()->route('kasir.transactions.show', ['id' => $lastTransactionId]);
+}
 
     public function show($id)
     {
-        $transaction = Transaction::with('product')->findOrFail($id);
-        return view('kasir.transactions.show', compact('transaction'));
+        $transactions = Transaction::where('id', $id)->get();
+        return view('kasir.transactions.show', compact('transactions','id'));
     }
+    
     private function calculateChange($totalPrice, $cashReceived)
     {
         return $cashReceived - $totalPrice;
@@ -117,104 +130,22 @@ class KasirController extends Controller
         return view('kasir.transactions.create', compact('products', 'search'));
     }
 
-
     public function stocksearch(Request $request)
     {
         $search = $request->input('search');
         $stocks = Product::Where('name', 'LIKE', "%{$search}%")->paginate(3);
 
-        return view('kasir.reports.stock', compact('stocks'));
+        return view('kasir.reports.stocks', compact('stocks'));
     }
 
-
-    public function downloadPDF()
+    public function downloadPdf($id)
     {
-        $transactions = Transaction::with('product')->get(); 
-
-        $pdf = Pdf::loadView('kasir.transactions.pdf', compact('transactions'));
-
-        return $pdf->download('transactions_report.pdf');
+        $transaction = Transaction::where('id', $id)->get();
+        $pdf = PDF::loadView('kasir.transactions.pdf', compact('transaction'));
+    
+        return $pdf->download('transaction_receipt_' . $id . '.pdf');
     }
-
-    public function createkasir()
-    {
-
-        return view('kasir.products.create');
-    }
-
-    public function storekasir(Request $request)
-    {
-        $request->validate([
-            'kode_barang' => 'required|unique:products,kode_barang',
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Validasi file gambar
-        ]);
-
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images/products', 'public');
-        }
-
-        Product::create([
-            'kode_barang' => $request->kode_barang,
-            'name' => $request->name,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'image' => $imagePath,
-        ]);
-
-        return redirect()->route('kasir.products')->with('success', 'Produk berhasil dibuat');
-    }
-
-    public function editkasir($id)
-    {
-        $product = Product::findOrFail($id);
-        return view('kasir.products.edit', compact('product'));
-    }
-
-    public function updatekasir(Request $request, $id)
-    {
-        $product = Product::findOrFail($id);
-
-        $request->validate([
-            'kode_barang' => 'required|unique:products,kode_barang,' . $product->id,
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
-
-        $imagePath = $product->image;
-        if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-            $imagePath = $request->file('image')->store('images/products', 'public');
-        }
-
-        $product->update([
-            'kode_barang' => $request->kode_barang,
-            'name' => $request->name,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'image' => $imagePath,
-        ]);
-
-        return redirect()->route('kasir.products')->with('success', 'Produk berhasil diperbarui');
-    }
-
-
-    public function destroykasir($id)
-    {
-        $product = Product::findOrFail($id);
-        $product->delete();
-
-        return redirect()->route('kasir.products')->with('success', 'Product deleted successfully');
-    }
-
+        
     public function searchpdct(Request $request)
     {
         $search = $request->input('search');
@@ -227,8 +158,6 @@ class KasirController extends Controller
         return view('kasir.products.index', compact('products', 'search'));
 
     }
-
-
 
     public function showProfilee()
     {

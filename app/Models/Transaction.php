@@ -9,6 +9,7 @@ class Transaction extends Model
 {
     use HasFactory;
 
+    protected $table = 'transactions';
     
 
     // Add the fields that you want to allow mass assignment for
@@ -26,4 +27,3 @@ class Transaction extends Model
         return $this->belongsTo(Product::class);
     }
 }
-

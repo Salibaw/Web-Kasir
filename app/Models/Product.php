@@ -30,7 +30,7 @@ class Product extends Model
         'image',
     ];
 
-    public function sales()
+    public function Transaction()
     {
         return $this->hasMany(Sale::class);
     }

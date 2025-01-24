@@ -44,12 +44,16 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    
+
     public function getProfilePictureUrlAttribute()
     {
         if ($this->profile_picture) {
             return asset('storage/profile_pictures/' . $this->profile_picture);
         }
         return asset('images/profile-placeholder.png');
+    }
+    public function Sale()
+    {
+        return $this->hasMany(Sale::class);
     }
 }

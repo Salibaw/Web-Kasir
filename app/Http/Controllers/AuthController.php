@@ -28,14 +28,10 @@ class AuthController extends Controller
             switch ($user->role) {
                 case 'admin':
                     return redirect()->route('admin.dashboard');
-                case 'pengguna':
-                    return redirect()->route('pengguna.dashboard');
                 case 'petugas_kasir':
                     return redirect()->route('kasir.dashboard');
-                case 'petugas_barang':
-                    return redirect()->route('barang.dashboard');
                 default:
-                    return redirect()->route('dashboard');
+                    return redirect()->route('kasir.dashboard');
             }
         }
 
@@ -59,12 +55,11 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Set role default menjadi 'pengguna'
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'pengguna',
+            'role' => 'petugas_kasir',
         ]);
 
         return redirect()->route('login')->with('success', 'Registrasi berhasil. Silakan login.');
