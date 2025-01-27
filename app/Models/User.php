@@ -52,4 +52,7 @@ class User extends Authenticatable
         }
         return asset('images/profile-placeholder.png');
     }
+    public function sale(){
+        return $this->hasMany(Sale::class);
+    }
 }

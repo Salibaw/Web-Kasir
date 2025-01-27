@@ -7,6 +7,9 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ProductImport;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -134,4 +137,24 @@ class ProductController extends Controller
 
         return $pdf->download('transactions_report.pdf');
     }
+    public function import(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls'
+    ]);
+
+    $data = Excel::toArray(new ProductImport, $request->file('file'));
+
+    foreach ($data[0] as $row) {
+        Validator::make($row, [
+            '0' => 'required', // kode_barang
+            '1' => 'required', // name
+            // Tambahkan validasi lainnya jika diperlukan
+        ])->validate();
+    }
+
+    Excel::import(new ProductImport, $request->file('file'));
+
+    return redirect()->back()->with('success', 'Products imported successfully.');
+}
 }

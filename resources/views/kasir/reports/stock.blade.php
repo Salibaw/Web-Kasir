@@ -2,71 +2,72 @@
 
 @section('content')
 <style>
+.stock-container {
+    background-color: #00328E;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 30px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.stock-table {
+    background-color: white;
+    border-radius: 8px;
+}
+
+.stock-image {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+@media (max-width: 768px) {
     .stock-container {
-        background-color: #00328E;
-        border-radius: 15px;
-        padding: 25px;
-        margin-top: 30px;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        padding: 15px;
+        margin-top: 20px;
     }
 
-    .stock-table {
-        background-color: white;
-        border-radius: 8px;
+    .table-responsive {
+        margin: 0 -15px;
+        overflow-x: auto;
     }
 
     .stock-image {
-        width: 70px;
-        height: 70px;
-        object-fit: cover;
-        border-radius: 4px;
+        width: 50px;
+        height: 50px;
     }
 
-    @media (max-width: 768px) {
-        .stock-container {
-            padding: 15px;
-            margin-top: 20px;
-        }
+    .pagination {
+        font-size: 12px;
+        text-align: center;
+    }
+}
 
-        .table-responsive {
-            margin: 0 -15px;
-            overflow-x: auto;
-        }
-
-        .stock-image {
-            width: 50px;
-            height: 50px;
-        }
-
-        .pagination {
-            font-size: 12px;
-            text-align: center;
-        }
+@media (max-width: 576px) {
+    .stock-image {
+        width: 40px;
+        height: 40px;
     }
 
-    @media (max-width: 576px) {
-        .stock-image {
-            width: 40px;
-            height: 40px;
-        }
-
-        .table th, .table td {
-            padding: 8px;
-        }
-
-        .table thead {
-            font-size: 14px;
-        }
+    .table th,
+    .table td {
+        padding: 8px;
     }
+
+    .table thead {
+        font-size: 14px;
+    }
+}
 </style>
 
 <div class="container-fluid ">
-  <h4 class="mt-4">Laporan Stock</h4>
+    <h4 class="mt-4">Laporan Stock</h4>
     <div class="row mb-4">
         <div class="col-12">
-            <form action="{{ route('admin.search.stock') }}" method="GET" class="d-flex gap-2">
-                <input class="form-control" name="search" type="search" 
-                       placeholder="Search products..." value="{{ old('search', $search ?? '') }}">
+            <form action="{{ route('kasir.product.search') }}" method="GET" class="d-flex gap-2">
+                <input class="form-control" name="search" type="search" placeholder="Search products..."
+                    value="{{ old('search', $search ?? '') }}">
                 <button class="btn btn-primary" type="submit">Search</button>
             </form>
         </div>
@@ -84,17 +85,17 @@
                 </thead>
                 <tbody>
                     @forelse ($stocks as $stock)
-                        <tr>
-                            <td class="text-center">{{ $stock->name }}</td>
-                            <td class="text-center">{{ $stock->stock }}</td>
-                            <td class="text-center">
-                                Rp{{ number_format($stock->price, 0, ',', '.') }}
-                            </td>
-                        </tr>
+                    <tr>
+                        <td class="text-center">{{ $stock->name }}</td>
+                        <td class="text-center">{{ $stock->stock }}</td>
+                        <td class="text-center">
+                            Rp{{ number_format($stock->price, 0, ',', '.') }}
+                        </td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="5" class="text-center">No stocks found</td>
-                        </tr>
+                    <tr>
+                        <td colspan="5" class="text-center">No stocks found</td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -109,10 +110,10 @@
                     <li class="page-item {{ $stocks->currentPage() == $i ? 'active' : '' }}">
                         <a class="page-link" href="{{ $stocks->url($i) }}">{{ $i }}</a>
                     </li>
-                @endfor
-                <li class="page-item {{ !$stocks->hasMorePages() ? 'disabled' : '' }}">
-                    <span class="page-link" href="{{ $stocks->nextPageUrl() }}">Next</span>
-                </li>
+                    @endfor
+                    <li class="page-item {{ !$stocks->hasMorePages() ? 'disabled' : '' }}">
+                        <span class="page-link" href="{{ $stocks->nextPageUrl() }}">Next</span>
+                    </li>
             </ul>
         </nav>
     </div>
